@@ -1,0 +1,25 @@
+version: 1
+
+
+sources :
+  - name : raw_data
+    schema : "{{ env_var('BQ_DATASET') }}"
+    tables :
+      - name : products
+        identifier : "{{ env_var('BQ_TABLE') }}"
+
+
+models :
+  - name : stg_products
+    description : "First cleaning data"
+    columns :
+      - name : id
+        description : "Product id in the source database"
+        tests :
+          - not_null
+          - unique
+
+      - name : sku
+        description : "Product's sku"
+        tests :
+          - not_null

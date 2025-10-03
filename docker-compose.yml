@@ -1,0 +1,33 @@
+services:
+  
+  scraper:
+    build: 
+      context: .
+      dockerfile: ./scraper/Dockerfile
+
+    container_name: scraper_app
+    
+    volumes:
+      - ./scraper:/app/scraper/
+    
+    env_file:
+      - ./.env
+      - ./scraper/.env
+
+  dbt:
+    build: 
+      context: .
+      dockerfile: ./dbt_part/Dockerfile
+    
+    container_name: dbt_app
+    
+    volumes:
+      - ./dbt_part:/app/dbt_part/
+    
+    env_file:
+      - ./.env
+      - ./dbt_part/.env
+    
+    depends_on:
+      - scraper
+  

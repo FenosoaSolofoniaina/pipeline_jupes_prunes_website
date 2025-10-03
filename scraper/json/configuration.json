@@ -1,0 +1,7 @@
+{
+    "main_url" : "https://lesjupesdeprune.com/collections/les-jupes-2",
+    "products" : {
+        "selector" : "ul[class~='product-grid'] a[ref='productCardLink']",
+        "attribute" : "href"
+    }
+}
