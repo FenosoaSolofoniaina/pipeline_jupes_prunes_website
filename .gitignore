@@ -1,3 +1,4 @@
 logs/
 .env
 scraper/json/service-account.json
+dbt_part/.dbt/service-account.json
