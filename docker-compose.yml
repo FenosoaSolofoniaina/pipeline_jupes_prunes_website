@@ -31,3 +31,22 @@ services:
     depends_on:
       - scraper
   
+  airflow:
+    build:
+      context: .
+      dockerfile: ./airflow/Dockerfile
+
+    container_name: airflow_app
+
+    volumes:
+      - ./airflow/:/app/airflow/
+
+    depends_on:
+      - scraper
+      - dbt
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      - AIRFLOW__CORE__LOAD_EXAMPLES=false

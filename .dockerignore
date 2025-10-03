@@ -1,0 +1,6 @@
+.gitignore
+airflow/.gitignore
+dbt_part/.gitignore
+scraper/.gitignore
+README.md
+dbt_part/README.md
