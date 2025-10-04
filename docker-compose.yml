@@ -14,48 +14,48 @@ services:
       - ./.env
       - ./scraper/.env
 
-  # dbt_app:
-  #   build: 
-  #     context: .
-  #     dockerfile: ./dbt_part/Dockerfile
+  dbt_app:
+    build: 
+      context: .
+      dockerfile: ./dbt_part/Dockerfile
     
-  #   container_name: dbt_container
+    container_name: dbt_container
     
-  #   volumes:
-  #     - ./dbt_part:/app/dbt_part/
+    volumes:
+      - ./dbt_part:/app/dbt_part/
     
-  #   env_file:
-  #     - ./.env
-  #     - ./dbt_part/.env
+    env_file:
+      - ./.env
+      - ./dbt_part/.env
     
-  #   depends_on:
-  #     - web_scraper_app
+    depends_on:
+      - web_scraper_app
   
-  # airflow_app:
-  #   build:
-  #     context: .
-  #     dockerfile: ./airflow/Dockerfile
+  airflow_app:
+    build:
+      context: .
+      dockerfile: ./airflow/Dockerfile
 
-  #   container_name: airflow_container
+    container_name: airflow_container
 
-  #   volumes:
-  #     - ./airflow/dags:/opt/airflow/dags
-  #     - ./airflow/logs:/opt/airflow/logs
-  #     - ./airflow/plugins:/opt/airflow/plugins
-  #     - /var/run/docker.sock:/var/run/docker.sock
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - /var/run/docker.sock:/var/run/docker.sock
 
-  #   depends_on:
-  #     - web_scraper_app
-  #     - dbt_app
+    depends_on:
+      - web_scraper_app
+      - dbt_app
 
-  #   ports:
-  #     - "8000:8000"
+    ports:
+      - "8000:8000"
 
-  #   environment:
-  #     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-  #     - AIRFLOW__CORE__LOAD_EXEMPLES=False
-  #     - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
-  #     - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow_init.db
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXEMPLES=False
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow_init.db
 
-  #   command: >
-  #     bash -c "airflow db migrate && airflow scheduler & airflow api-server"
+    command: >
+      bash -c "airflow db migrate && airflow scheduler & airflow api-server"

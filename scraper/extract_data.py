@@ -150,7 +150,7 @@ def main() -> None :
     print('==================== PROGRAM STARTED ====================')
 
     load_dotenv()
-    CONFIG_FP = 'json/configuration.json'
+    CONFIG_FP = os.path.join(os.getcwd(), 'json/configuration.json')
     SERVICE_ACCOUNT_FILE_PATH = os.getenv('SERVICE_ACCOUNT_FILE_PATH')
     GCP_PROJECT_ID = os.getenv('GCP_PROJECT_ID')
     BQ_DATASET = os.getenv('BQ_DATASET')
