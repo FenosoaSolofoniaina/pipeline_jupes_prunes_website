@@ -1,11 +1,11 @@
 services:
   
-  scraper:
+  web_scraper_app:
     build: 
       context: .
       dockerfile: ./scraper/Dockerfile
 
-    container_name: scraper_app
+    container_name: web_scraper_container
     
     volumes:
       - ./scraper:/app/scraper/
@@ -14,39 +14,48 @@ services:
       - ./.env
       - ./scraper/.env
 
-  dbt:
-    build: 
-      context: .
-      dockerfile: ./dbt_part/Dockerfile
+  # dbt_app:
+  #   build: 
+  #     context: .
+  #     dockerfile: ./dbt_part/Dockerfile
     
-    container_name: dbt_app
+  #   container_name: dbt_container
     
-    volumes:
-      - ./dbt_part:/app/dbt_part/
+  #   volumes:
+  #     - ./dbt_part:/app/dbt_part/
     
-    env_file:
-      - ./.env
-      - ./dbt_part/.env
+  #   env_file:
+  #     - ./.env
+  #     - ./dbt_part/.env
     
-    depends_on:
-      - scraper
+  #   depends_on:
+  #     - web_scraper_app
   
-  airflow:
-    build:
-      context: .
-      dockerfile: ./airflow/Dockerfile
+  # airflow_app:
+  #   build:
+  #     context: .
+  #     dockerfile: ./airflow/Dockerfile
 
-    container_name: airflow_app
+  #   container_name: airflow_container
 
-    volumes:
-      - ./airflow/:/app/airflow/
+  #   volumes:
+  #     - ./airflow/dags:/opt/airflow/dags
+  #     - ./airflow/logs:/opt/airflow/logs
+  #     - ./airflow/plugins:/opt/airflow/plugins
+  #     - /var/run/docker.sock:/var/run/docker.sock
 
-    depends_on:
-      - scraper
-      - dbt
+  #   depends_on:
+  #     - web_scraper_app
+  #     - dbt_app
 
-    ports:
-      - "8000:8000"
+  #   ports:
+  #     - "8000:8000"
 
-    environment:
-      - AIRFLOW__CORE__LOAD_EXAMPLES=false
+  #   environment:
+  #     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+  #     - AIRFLOW__CORE__LOAD_EXEMPLES=False
+  #     - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+  #     - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow_init.db
+
+  #   command: >
+  #     bash -c "airflow db migrate && airflow scheduler & airflow api-server"
