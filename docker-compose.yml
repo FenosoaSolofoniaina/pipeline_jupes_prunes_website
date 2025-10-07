@@ -49,13 +49,10 @@ services:
       - dbt_app
 
     ports:
-      - "8000:8000"
+      - "8080:8080"
 
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXEMPLES=False
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow_init.db
-
-    command: >
-      bash -c "airflow db migrate && airflow scheduler & airflow api-server"
