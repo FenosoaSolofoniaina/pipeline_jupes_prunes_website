@@ -1,18 +1,19 @@
 from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator
-from datetime import datetime
+from datetime import datetime, timedelta
+
 
 
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime(2025, 10, 4),
+    'start_date': datetime.now() - timedelta(days=1),
     'retries': 1
 }
 
 with DAG(
-    'pipeline_les_petites_jupes_de_prunes',
+    dag_id='pipeline_les_petites_jupes_de_prunes',
     default_args=default_args,
-    schedule_interval='None',
+    schedule=None,
     catchup=False
 ) as dag:
 

@@ -4,7 +4,7 @@ USER airflow
 
 RUN mkdir -p /opt/airflow/dags /opt/airflow/logs /opt/airflow/plugins
 
-WORKDIR /opt/airflow/
+WORKDIR /opt/airflow
 
 COPY ./airflow/dags/ /opt/airflow/dags/
 COPY ./airflow/plugins/ /opt/airflow/plugins/
