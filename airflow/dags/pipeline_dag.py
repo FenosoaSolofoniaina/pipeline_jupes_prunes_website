@@ -1,43 +1,54 @@
 from airflow import DAG
+from airflow.operators.bash import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime.now() - timedelta(days=1),
+    'start_date': datetime(2025, 10, 10),
     'retries': 1
 }
 
 with DAG(
-    dag_id='pipeline_les_petites_jupes_de_prunes',
+    dag_id='pipeline_les_petites_jupes_de_prunes_v1',
+    description='Run pipeline that extract data in the website to push it on the cloud',
     default_args=default_args,
-    schedule=None,
+    schedule_interval=None,
     catchup=False
 ) as dag:
 
-    # 1. Web scraping
-    scrape = DockerOperator(
-        task_id='scrape_data',
-        image='web_scraper_app:latest',   # ton image scraper
-        auto_remove=True,
-        command='python3 extract_data.py',          # ton script principal de scraping
-        docker_url='unix://var/run/docker.sock',
-        network_mode='bridge',             # permet aux conteneurs de communiquer
-        mount_tmp_dir=False
+    init_wf = BashOperator(
+        task_id='bash_model_initializing',
+        bash_command='echo "INITIALIZING THE WORKFLOW ..."'
     )
 
-    # 2️⃣ DBT transformations
-    dbt_run = DockerOperator(
-        task_id='dbt_run',
-        image='dbt_app:latest',           # ton image DBT
-        auto_remove=True,
-        command='dbt run --profiles-dir /app/dbt_part/.dbt',
+    scrape_wf = DockerOperator(
+        task_id='docker_model_scrape_data',
         docker_url='unix://var/run/docker.sock',
+        image='web_scraper_app:latest',
+        auto_remove=True,
+        command=["python3", "extract_data.py"],
         network_mode='bridge',
-        mount_tmp_dir=False
+        mount_tmp_dir=False,
+        environment={'PYTHONUNBUFFERED': '1'}
     )
 
-    # Définir l’ordre d’exécution : scraping → DBT
-    scrape >> dbt_run
+    dbt_wf = DockerOperator(
+        task_id='docker_model_dbt_transformation',
+        docker_url='unix://var/run/docker.sock',
+        image='dbt_app:latest',
+        command=["dbt", "run", "--profiles-dir", "/app/dbt_part/.dbt"],
+        auto_remove=True,
+        network_mode='bridge',
+        mount_tmp_dir=False,
+        environment={'PYTHONUNBUFFERED': '1'}
+    )
+
+    end_wf = BashOperator(
+        task_id='bash_model_ending',
+        bash_command='echo "CLOSING THE WORKFLOW..."'
+    )
+
+    init_wf >> scrape_wf >> dbt_wf >> end_wf

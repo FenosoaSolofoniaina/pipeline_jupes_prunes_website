@@ -14,6 +14,7 @@ services:
       - ./.env
       - ./scraper/.env
 
+
   dbt_app:
     build: 
       context: .
@@ -29,8 +30,11 @@ services:
       - ./dbt_part/.env
     
     depends_on:
-      - web_scraper_app
+      <<: *airflow-common-depends-on
+      web_scraper_app:
+        condition: service_completed_successfully
   
+
   airflow_app:
     build:
       context: .
@@ -45,8 +49,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
     depends_on:
-      - web_scraper_app
-      - dbt_app
+      web_scraper_app:
+        condition: service_healthy
+      dbt_app:
+        condition: service_completed_successfully
 
     ports:
       - "8080:8080"
