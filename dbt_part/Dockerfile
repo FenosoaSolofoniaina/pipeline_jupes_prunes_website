@@ -5,7 +5,7 @@ WORKDIR /app/dbt_part
 COPY ./../requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./ ./
+COPY . .
 
 ENV DBT_PROFILES_DIR=/app/dbt_part/.dbt
 

@@ -1,12 +1,14 @@
 services:
-  
+
+
   web_scraper_app:
+
     build: 
       context: .
       dockerfile: ./scraper/Dockerfile
 
     container_name: web_scraper_container
-    
+
     volumes:
       - ./scraper:/app/scraper/
     
@@ -16,24 +18,23 @@ services:
 
 
   dbt_app:
+
     build: 
       context: .
       dockerfile: ./dbt_part/Dockerfile
-    
+
     container_name: dbt_container
-    
+
     volumes:
       - ./dbt_part:/app/dbt_part/
     
     env_file:
       - ./.env
       - ./dbt_part/.env
-    
+
     depends_on:
-      <<: *airflow-common-depends-on
-      web_scraper_app:
-        condition: service_completed_successfully
-  
+      - web_scraper_app
+
 
   airflow_app:
     build:
@@ -42,23 +43,24 @@ services:
 
     container_name: airflow_container
 
+    ports:
+      - "8080:8080"
+
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - /var/run/docker.sock:/var/run/docker.sock
 
-    depends_on:
-      web_scraper_app:
-        condition: service_healthy
-      dbt_app:
-        condition: service_completed_successfully
-
-    ports:
-      - "8080:8080"
-
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXEMPLES=False
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow_init.db
+
+    depends_on:
+      - web_scraper_app
+      - dbt_app
+
+    command: >
+      bash -c "airflow db migrate && airflow standalone"

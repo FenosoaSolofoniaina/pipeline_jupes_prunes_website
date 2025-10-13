@@ -28,11 +28,11 @@ with DAG(
         task_id='docker_model_scrape_data',
         docker_url='unix://var/run/docker.sock',
         image='web_scraper_app:latest',
+        container_name='web_scraper_app',
         auto_remove=True,
         command=["python3", "extract_data.py"],
         network_mode='bridge',
-        mount_tmp_dir=False,
-        environment={'PYTHONUNBUFFERED': '1'}
+        dag=dag
     )
 
     dbt_wf = DockerOperator(
@@ -40,10 +40,10 @@ with DAG(
         docker_url='unix://var/run/docker.sock',
         image='dbt_app:latest',
         command=["dbt", "run", "--profiles-dir", "/app/dbt_part/.dbt"],
+        container_name='dbt_app',
         auto_remove=True,
         network_mode='bridge',
-        mount_tmp_dir=False,
-        environment={'PYTHONUNBUFFERED': '1'}
+        dag=dag
     )
 
     end_wf = BashOperator(
