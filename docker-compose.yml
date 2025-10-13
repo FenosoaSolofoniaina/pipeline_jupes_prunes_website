@@ -16,6 +16,9 @@ services:
       - ./.env
       - ./scraper/.env
 
+    networks:
+      - app_connections
+
 
   dbt_app:
 
@@ -35,11 +38,13 @@ services:
     depends_on:
       - web_scraper_app
 
+    networks:
+      - app_connections
+
 
   airflow_app:
-    build:
-      context: .
-      dockerfile: ./airflow/Dockerfile
+  
+    image: apache/airflow:slim-3.1.0
 
     container_name: airflow_container
 
@@ -64,3 +69,12 @@ services:
 
     command: >
       bash -c "airflow db migrate && airflow standalone"
+
+    networks:
+      - app_connections
+
+
+
+networks:
+  app_connections:
+    driver: bridge
