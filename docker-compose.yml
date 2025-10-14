@@ -10,11 +10,14 @@ services:
     container_name: web_scraper_container
 
     volumes:
-      - ./scraper:/app/scraper/
+      - ./scraper:/app/scraper
     
     env_file:
       - ./.env
       - ./scraper/.env
+
+    command: >
+      python3 extract_data.py
 
     networks:
       - app_connections
@@ -29,7 +32,7 @@ services:
     container_name: dbt_container
 
     volumes:
-      - ./dbt_part:/app/dbt_part/
+      - ./dbt_part:/app/dbt_part
     
     env_file:
       - ./.env
@@ -38,13 +41,18 @@ services:
     depends_on:
       - web_scraper_app
 
+    command: >
+      dbt run
+
     networks:
       - app_connections
 
 
   airflow_app:
   
-    image: apache/airflow:slim-3.1.0
+    build:
+      context: .
+      dockerfile: ./airflow/Dockerfile
 
     container_name: airflow_container
 
@@ -52,10 +60,12 @@ services:
       - "8080:8080"
 
     volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/logs:/opt/airflow/logs
-      - ./airflow/plugins:/opt/airflow/plugins
+      - ./airflow/dags:/opt/airflow/dags:z
+      - ./airflow/logs:/opt/airflow/logs:z
+      - ./airflow/plugins:/opt/airflow/plugins:z
       - /var/run/docker.sock:/var/run/docker.sock
+
+    user: "${AIRFLOW_UID:-50000}:0"
 
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
