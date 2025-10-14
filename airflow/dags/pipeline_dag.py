@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
 from docker.types import Mount
 from datetime import datetime, timedelta
@@ -16,7 +16,7 @@ with DAG(
     dag_id='pipeline_les_petites_jupes_de_prunes_v1',
     description='Run pipeline that extract data in the website to push it on the cloud',
     default_args=default_args,
-    schedule=timedelta(minutes=2),
+    schedule=timedelta(minutes=30),
     catchup=False
 ) as dag:
 
@@ -36,7 +36,7 @@ with DAG(
                   type='bind')
         ],
         command=["python3", "extract_data.py"],
-        auto_remove=True,
+        #auto_remove=True,
         network_mode='bridge',
         dag=dag
     )
@@ -55,7 +55,7 @@ with DAG(
                   type='bind')
         ],
         command=["dbt", "run", "--profiles-dir", "/app/dbt_part/.dbt"],
-        auto_remove=True,
+        #auto_remove=True,
         network_mode='bridge',
         dag=dag
     )
