@@ -11,6 +11,7 @@ services:
 
     volumes:
       - ./scraper:/app/scraper
+      - ./service-account.json:/app/scraper/service-account.json
     
     env_file:
       - ./.env
