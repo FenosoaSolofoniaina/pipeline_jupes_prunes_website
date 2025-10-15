@@ -14,7 +14,7 @@ services:
     
     env_file:
       - ./.env
-      - ./scraper/.env
+      - ./scraper/.scraper_env
 
     command: >
       python3 extract_data.py
@@ -36,7 +36,7 @@ services:
     
     env_file:
       - ./.env
-      - ./dbt_part/.env
+      - ./dbt_part/.dbt_env
 
     depends_on:
       - web_scraper_app
