@@ -147,7 +147,7 @@ def main() -> None :
     """
         MAIN FUNCTION
     """
-    print('==================== PROGRAM STARTED ====================')
+    print('==================== SCRAPING STARTED ====================')
 
     load_dotenv()
     CONFIG_FP = os.path.join(os.getcwd(), 'json/configuration.json')
@@ -162,7 +162,7 @@ def main() -> None :
              dataset=BQ_DATASET,
              table=BQ_TABLE)
 
-    print('==================== PROGRAM FINISHED ====================')
+    print('==================== SCRAPING FINISHED ====================')
 
 
 # ======================================================================== #

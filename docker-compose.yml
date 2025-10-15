@@ -63,7 +63,7 @@ services:
       - ./airflow/dags:/opt/airflow/dags:z
       - ./airflow/logs:/opt/airflow/logs:z
       - ./airflow/plugins:/opt/airflow/plugins:z
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:z
 
     user: "${AIRFLOW_UID:-50000}:0"
 
