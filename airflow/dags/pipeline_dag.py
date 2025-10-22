@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
+from docker.types import Mount
 
 
 
@@ -25,6 +26,7 @@ with DAG(
 
     load_env()
 
+    BASE_DIR = os.path.abspath(os.path.join(os.getcwd(), '..', '..'))
     DOCKER_URL = 'unix://var/run/docker.sock'
     PROJECT_PREFIX = os.getenv('PROJECT_PREFIX')
     
@@ -39,10 +41,14 @@ with DAG(
         task_id='docker_model_scrape_data',
         docker_url=DOCKER_URL,
         image=f'{PROJECT_PREFIX}-scraper:latest',
-        container_name='web_scraper_container',
         command=["python3", "extract_data.py"],
         network_mode='bridge',
         auto_remove='success',
+        mounts = [
+            Mount(source=f'{BASE_DIR}/service-account.json',
+                  target='/app/scraper/service-account.json',
+                  type='bind')
+        ],
         force_pull=False
     )
 
@@ -51,10 +57,14 @@ with DAG(
         task_id='docker_model_dbt_transformation',
         docker_url=DOCKER_URL,
         image=f'{PROJECT_PREFIX}-dbt:latest',
-        container_name='dbt_container',
         command=["dbt", "run", "--profiles-dir", "/app/dbt_part/.dbt"],
         network_mode='bridge',
         auto_remove='success',
+        mounts = [
+            Mount(source=f'{BASE_DIR}/service-account.json',
+                  target='/app/scraper/service-account.json',
+                  type='bind')
+        ],
         force_pull=False
     )
 
