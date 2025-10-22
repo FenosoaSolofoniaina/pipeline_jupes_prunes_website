@@ -62,7 +62,7 @@ with DAG(
         auto_remove='success',
         mounts = [
             Mount(source=f'{BASE_DIR}/service-account.json',
-                  target='/app/scraper/service-account.json',
+                  target='/app/dbt_part/service-account.json',
                   type='bind')
         ],
         force_pull=False
