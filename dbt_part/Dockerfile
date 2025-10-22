@@ -4,12 +4,10 @@ WORKDIR /app/dbt_part
 
 COPY ./../requirements.txt .
 
-COPY ./../service-account.json .
-
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ./../service-account.json .
 
 COPY . .
 
 ENV DBT_PROFILES_DIR=/app/dbt_part/.dbt
-
-CMD ["dbt", "run"]

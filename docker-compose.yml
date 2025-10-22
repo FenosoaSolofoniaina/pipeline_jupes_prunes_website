@@ -44,6 +44,9 @@ services:
       - ./.env
       - ./dbt_part/.env
 
+    environment:
+      - DBT_PROFILES_DIR=/app/dbt_part/.dbt
+
     depends_on:
       - web_scraper_app
 
