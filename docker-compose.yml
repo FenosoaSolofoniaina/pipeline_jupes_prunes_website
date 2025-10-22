@@ -7,6 +7,8 @@ services:
       context: .
       dockerfile: ./scraper/Dockerfile
 
+    image : ${PROJECT_PREFIX}-scraper:latest
+
     container_name: web_scraper_container
 
     volumes:
@@ -15,7 +17,7 @@ services:
     
     env_file:
       - ./.env
-      - ./scraper/.scraper_env
+      - ./scraper/.env
 
     command: >
       python3 extract_data.py
@@ -30,14 +32,17 @@ services:
       context: .
       dockerfile: ./dbt_part/Dockerfile
 
+    image: ${PROJECT_PREFIX}-dbt:latest
+
     container_name: dbt_container
 
     volumes:
       - ./dbt_part:/app/dbt_part
+      - ./service-account.json:/app/dbt_part/service-account.json
     
     env_file:
       - ./.env
-      - ./dbt_part/.dbt_env
+      - ./dbt_part/.env
 
     depends_on:
       - web_scraper_app
@@ -55,6 +60,8 @@ services:
       context: .
       dockerfile: ./airflow/Dockerfile
 
+    image: ${PROJECT_PREFIX}-airflow:latest
+
     container_name: airflow_container
 
     ports:
@@ -64,15 +71,19 @@ services:
       - ./airflow/dags:/opt/airflow/dags:z
       - ./airflow/logs:/opt/airflow/logs:z
       - ./airflow/plugins:/opt/airflow/plugins:z
-      - /var/run/docker.sock:/var/run/docker.sock:z
+      - /var/run/docker.sock:/var/run/docker.sock
 
     user: "${AIRFLOW_UID:-50000}:0"
+
+    add_group:
+      - "${DOCKER_GID}"
 
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXEMPLES=False
       - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow_init.db
+      - TZ=UTC
 
     depends_on:
       - web_scraper_app

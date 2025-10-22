@@ -4,10 +4,8 @@ WORKDIR /app/scraper
 
 COPY ./../requirements.txt .
 
-COPY ./../service-account.json .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY ./../service-account.json .
 
-CMD ["python3", "extract_data.py"]
+COPY . .
