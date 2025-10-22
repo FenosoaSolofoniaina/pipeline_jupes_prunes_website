@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.providers.docker.operators.docker import DockerOperator
-from docker.types import Mount
+# from docker.types import Mount
 
 
 
@@ -44,11 +44,11 @@ with DAG(
         command=["python3", "extract_data.py"],
         network_mode='bridge',
         auto_remove='success',
-        mounts = [
-            Mount(source=f'{BASE_DIR}/service-account.json',
-                  target='/app/scraper/service-account.json',
-                  type='bind')
-        ],
+        # mounts = [
+        #     Mount(source=f'{BASE_DIR}/service-account.json',
+        #           target='/app/scraper/service-account.json',
+        #           type='bind')
+        # ],
         force_pull=False
     )
 
@@ -60,11 +60,11 @@ with DAG(
         command=["dbt", "run", "--profiles-dir", "/app/dbt_part/.dbt"],
         network_mode='bridge',
         auto_remove='success',
-        mounts = [
-            Mount(source=f'{BASE_DIR}/service-account.json',
-                  target='/app/dbt_part/service-account.json',
-                  type='bind')
-        ],
+        # mounts = [
+        #     Mount(source=f'{BASE_DIR}/service-account.json',
+        #           target='/app/dbt_part/service-account.json',
+        #           type='bind')
+        # ],
         force_pull=False
     )
 
