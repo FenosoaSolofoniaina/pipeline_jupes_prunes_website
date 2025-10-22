@@ -78,7 +78,7 @@ services:
 
     user: "${AIRFLOW_UID:-50000}:0"
 
-    add_group:
+    group_add:
       - "${DOCKER_GID}"
 
     environment:

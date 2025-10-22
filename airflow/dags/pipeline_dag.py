@@ -12,7 +12,7 @@ default_args = {
     'owner': 'airflow',
     'start_date': datetime(2025, 10, 10),
     'retries': 1,
-    'retries_delay' : timedelta(minutes=5)
+    'retry_delay' : timedelta(minutes=5)
 }
 
 with DAG(
@@ -41,7 +41,9 @@ with DAG(
         image=f'{PROJECT_PREFIX}-scraper:latest',
         container_name='web_scraper_container',
         command=["python3", "extract_data.py"],
-        network_mode='bridge'
+        network_mode='bridge',
+        auto_remove='success',
+        force_pull=False
     )
 
     # Task 3
@@ -52,6 +54,8 @@ with DAG(
         container_name='dbt_container',
         command=["dbt", "run", "--profiles-dir", "/app/dbt_part/.dbt"],
         network_mode='bridge',
+        auto_remove='success',
+        force_pull=False
     )
 
     # Task 4
