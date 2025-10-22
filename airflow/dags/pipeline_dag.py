@@ -1,5 +1,5 @@
 import os
-from dotenv import load_env
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -24,7 +24,7 @@ with DAG(
     catchup=False
 ) as dag:
 
-    load_env()
+    load_dotenv()
 
     BASE_DIR = os.path.abspath(os.path.join(os.getcwd(), '..', '..'))
     DOCKER_URL = 'unix://var/run/docker.sock'
@@ -32,13 +32,13 @@ with DAG(
     
     # Task 1
     init_wf = BashOperator(
-        task_id='bash_model_initializing',
+        task_id='bash.Initializing',
         bash_command='echo "INITIALIZING THE WORKFLOW ..."'
     )
 
     # Task 2
     scrape_wf = DockerOperator(
-        task_id='docker_model_scrape_data',
+        task_id='docker.Web_scraping',
         docker_url=DOCKER_URL,
         image=f'{PROJECT_PREFIX}-scraper:latest',
         command=["python3", "extract_data.py"],
@@ -54,7 +54,7 @@ with DAG(
 
     # Task 3
     dbt_wf = DockerOperator(
-        task_id='docker_model_dbt_transformation',
+        task_id='docker.DBT',
         docker_url=DOCKER_URL,
         image=f'{PROJECT_PREFIX}-dbt:latest',
         command=["dbt", "run", "--profiles-dir", "/app/dbt_part/.dbt"],
@@ -70,7 +70,7 @@ with DAG(
 
     # Task 4
     end_wf = BashOperator(
-        task_id='bash_model_ending',
+        task_id='bash.Ending',
         bash_command='echo "CLOSING THE WORKFLOW..."'
     )
 
